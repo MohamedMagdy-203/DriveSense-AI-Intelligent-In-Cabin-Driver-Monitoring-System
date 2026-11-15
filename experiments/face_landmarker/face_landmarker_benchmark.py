@@ -30,7 +30,6 @@ WINDOW_NAME = "MediaPipe Face Landmarker Benchmark"
 class TrialResult:
     """Measurements collected during one webcam trial."""
 
-    delegate: str
     duration_seconds: float
     submitted_frames: int
     callback_frames: int
@@ -110,14 +109,10 @@ def _landmark_displacement(previous: list[object], current: list[object]) -> flo
     return statistics.fmean(distances)
 
 
-def _create_landmarker(model_path: Path, delegate: str, state: CallbackState):
+def _create_landmarker(model_path: Path, state: CallbackState):
     base_options = mp.tasks.BaseOptions(
         model_asset_path=str(model_path),
-        delegate=(
-            mp.tasks.BaseOptions.Delegate.GPU
-            if delegate == "gpu"
-            else mp.tasks.BaseOptions.Delegate.CPU
-        ),
+        delegate=mp.tasks.BaseOptions.Delegate.CPU,
     )
     options = mp.tasks.vision.FaceLandmarkerOptions(
         base_options=base_options,
@@ -133,7 +128,6 @@ def _create_landmarker(model_path: Path, delegate: str, state: CallbackState):
 
 def run_trial(
     model_path: Path,
-    delegate: str,
     camera_index: int,
     duration_seconds: float,
     display: bool,
@@ -141,7 +135,7 @@ def run_trial(
 ) -> TrialResult:
     """Run one trial and return measurements for model and pipeline separately."""
     state = CallbackState()
-    landmarker = _create_landmarker(model_path, delegate, state)
+    landmarker = _create_landmarker(model_path, state)
     camera = cv2.VideoCapture(camera_index)
     if not camera.isOpened():
         landmarker.close()
@@ -157,7 +151,7 @@ def run_trial(
     pipeline_latencies: list[float] = []
     submitted_frames = 0
     started = time.perf_counter()
-    print(f"{delegate.upper()} trial {trial_number}: {width}x{height}")
+    print(f"CPU trial {trial_number}: {width}x{height}")
 
     try:
         while time.perf_counter() - started < duration_seconds:
@@ -221,7 +215,6 @@ def run_trial(
         )
 
     return TrialResult(
-        delegate=delegate,
         duration_seconds=elapsed,
         submitted_frames=submitted_frames,
         callback_frames=callback_frames,
@@ -247,7 +240,7 @@ def _average(results: list[TrialResult], field: str) -> float:
 
 
 def _render_report(
-    results: dict[str, list[TrialResult]],
+    results: list[TrialResult],
     model_path: Path,
     duration_seconds: float,
     trials: int,
@@ -260,7 +253,7 @@ def _render_report(
         "## Configuration",
         f"- Model: `{model_path}`",
         f"- Duration per trial: `{duration_seconds:.0f} seconds`",
-        f"- Trials per delegate: `{trials}`",
+        f"- CPU trials: `{trials}`",
         "- Running mode: `LIVE_STREAM`",
         "- Face count: `1` (enables MediaPipe tracking/smoothing)",
         f"- OS: `{platform.platform()}`",
@@ -272,48 +265,47 @@ def _render_report(
         "arrive before the 2-second drain are not included in model latency.",
         "",
     ]
-    for delegate, delegate_results in results.items():
-        lines.extend(
-            [
-                f"## {delegate.upper()}",
-                "",
-                "| Trial | Duration (s) | Submitted frames | Callback frames | "
-                "FPS | Model latency (ms) | Pipeline latency (ms) | "
-                "CPU (%) | RAM (MB) | Detected frames | Failed detection frames | "
-                "Avg faces | Landmark stability (%) |",
-                "|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
-            ]
+    lines.extend(
+        [
+            "## CPU",
+            "",
+            "| Trial | Duration (s) | Submitted frames | Callback frames | "
+            "FPS | Model latency (ms) | Pipeline latency (ms) | "
+            "CPU (%) | RAM (MB) | Detected frames | Failed detection frames | "
+            "Avg faces | Landmark stability (%) |",
+            "|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+        ]
+    )
+    for index, result in enumerate(results, 1):
+        lines.append(
+            f"| {index} | {result.duration_seconds:.2f} | "
+            f"{result.submitted_frames} | {result.callback_frames} | "
+            f"{result.average_fps:.2f} | {result.average_model_latency_ms:.2f} | "
+            f"{result.average_pipeline_latency_ms:.2f} | "
+            f"{result.average_cpu_percent:.2f} | {result.average_ram_mb:.2f} | "
+            f"{result.detected_frames} | {result.failed_detection_frames} | "
+            f"{result.average_faces:.2f} | "
+            f"{result.landmark_stability_percent:.2f} |"
         )
-        for index, result in enumerate(delegate_results, 1):
-            lines.append(
-                f"| {index} | {result.duration_seconds:.2f} | "
-                f"{result.submitted_frames} | {result.callback_frames} | "
-                f"{result.average_fps:.2f} | {result.average_model_latency_ms:.2f} | "
-                f"{result.average_pipeline_latency_ms:.2f} | "
-                f"{result.average_cpu_percent:.2f} | {result.average_ram_mb:.2f} | "
-                f"{result.detected_frames} | {result.failed_detection_frames} | "
-                f"{result.average_faces:.2f} | "
-                f"{result.landmark_stability_percent:.2f} |"
-            )
-        lines.extend(
-            [
-                "",
-                "**Three-trial average**",
-                "",
-                f"- FPS: `{_average(delegate_results, 'average_fps'):.2f}`",
-                f"- Model latency: `{_average(delegate_results, 'average_model_latency_ms'):.2f} ms`",
-                f"- Pipeline latency: `{_average(delegate_results, 'average_pipeline_latency_ms'):.2f} ms`",
-                f"- CPU: `{_average(delegate_results, 'average_cpu_percent'):.2f}%`",
-                f"- RAM: `{_average(delegate_results, 'average_ram_mb'):.2f} MB`",
-                f"- Face detection rate: `{100 * _average(delegate_results, 'detected_frames') / max(_average(delegate_results, 'callback_frames'), 1):.2f}%`",
-                f"- Failed detection frames (average): `{_average(delegate_results, 'failed_detection_frames'):.2f}`",
-                f"- Landmark stability: `{_average(delegate_results, 'landmark_stability_percent'):.2f}%`",
-                f"- Mean landmark displacement: `{_average(delegate_results, 'mean_landmark_displacement'):.5f}`",
-                f"- Camera: `{delegate_results[0].resolution}` at approximately "
-                f"`{delegate_results[0].camera_fps:.2f} FPS`",
-                "",
-            ]
-        )
+    lines.extend(
+        [
+            "",
+            "**Three-trial average**",
+            "",
+            f"- FPS: `{_average(results, 'average_fps'):.2f}`",
+            f"- Model latency: `{_average(results, 'average_model_latency_ms'):.2f} ms`",
+            f"- Pipeline latency: `{_average(results, 'average_pipeline_latency_ms'):.2f} ms`",
+            f"- CPU: `{_average(results, 'average_cpu_percent'):.2f}%`",
+            f"- RAM: `{_average(results, 'average_ram_mb'):.2f} MB`",
+            f"- Face detection rate: `{100 * _average(results, 'detected_frames') / max(_average(results, 'callback_frames'), 1):.2f}%`",
+            f"- Failed detection frames (average): `{_average(results, 'failed_detection_frames'):.2f}`",
+            f"- Landmark stability: `{_average(results, 'landmark_stability_percent'):.2f}%`",
+            f"- Mean landmark displacement: `{_average(results, 'mean_landmark_displacement'):.5f}`",
+            f"- Camera: `{results[0].resolution}` at approximately "
+            f"`{results[0].camera_fps:.2f} FPS`",
+            "",
+        ]
+    )
     return "\n".join(lines)
 
 
@@ -323,12 +315,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--camera", type=int, default=0)
     parser.add_argument("--duration", type=float, default=60.0)
     parser.add_argument("--trials", type=int, default=3)
-    parser.add_argument(
-        "--delegate",
-        choices=("cpu", "gpu", "both"),
-        default="both",
-        help="Run CPU, GPU, or both delegates.",
-    )
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument(
         "--no-display",
@@ -348,21 +334,16 @@ def main() -> None:
     if args.duration <= 0 or args.trials <= 0:
         raise ValueError("--duration and --trials must be greater than zero.")
 
-    delegates = ("cpu", "gpu") if args.delegate == "both" else (args.delegate,)
-    results: dict[str, list[TrialResult]] = {}
-    for delegate in delegates:
-        results[delegate] = []
-        for trial_number in range(1, args.trials + 1):
-            results[delegate].append(
-                run_trial(
-                    args.model,
-                    delegate,
-                    args.camera,
-                    args.duration,
-                    not args.no_display,
-                    trial_number,
-                )
-            )
+    results = [
+        run_trial(
+            args.model,
+            args.camera,
+            args.duration,
+            not args.no_display,
+            trial_number,
+        )
+        for trial_number in range(1, args.trials + 1)
+    ]
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
         _render_report(results, args.model, args.duration, args.trials),

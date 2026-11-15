@@ -83,3 +83,24 @@
 - Across three trials, GStreamer used approximately 40% less CPU than OpenCV.
 - OpenCV maintained approximately 2.3% higher average FPS and used approximately 50% less RAM.
 - GStreamer remains the selected video-capture implementation because CPU efficiency is the primary requirement for the in-cabin monitoring workload.
+
+## MediaPipe CPU Pipeline Comparison
+
+The full three-trial, one-minute-per-trial comparison is stored in
+[`mediapipe_pipeline_results.md`](mediapipe_pipeline_results.md). Both
+pipelines used the same 640x480 webcam input, MediaPipe Face Landmarker CPU
+delegate, one face, and no display window.
+
+| Metric | OpenCV + MediaPipe | GStreamer + MediaPipe | Difference |
+|---|---:|---:|---:|
+| Average FPS | 28.91 | 29.42 | GStreamer +0.51 (+1.8%) |
+| Inference latency | 10.31 ms | 9.33 ms | GStreamer -0.98 ms |
+| Average CPU usage | 66.67% | 52.26% | GStreamer -14.41 percentage points |
+| Average RAM usage | 169.06 MB | 143.36 MB | GStreamer -25.70 MB |
+| Face detection rate | 97.66% | 98.78% | GStreamer +1.12 percentage points |
+
+### MediaPipe Pipeline Decision
+
+Under these measured conditions, GStreamer + MediaPipe is preferable: it
+provided slightly higher throughput, lower inference latency, lower CPU and
+RAM usage, and a slightly higher detection rate.

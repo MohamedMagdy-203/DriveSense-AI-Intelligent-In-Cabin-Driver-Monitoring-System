@@ -27,10 +27,10 @@ flowchart TD
 
 DriveSense AI will use a modular video processing architecture designed to support real-time operation while considering the computational and memory limitations of future Edge deployment environments.
 
-The video processing layer will be evaluated using two complementary technologies:
+The video processing layer was evaluated using two complementary technologies:
 
-- **GStreamer:** Proposed for camera input management, video streaming, buffering, and frame handling.
-- **OpenCV:** Proposed for image processing operations such as resizing, color conversion, and other frame-level transformations when required.
+- **GStreamer:** Selected for camera input management, video streaming, buffering, and frame handling.
+- **OpenCV:** Used for image processing operations such as resizing, color conversion, drawing, and other frame-level transformations.
 
 ### 2.2 Design Considerations
 
@@ -45,7 +45,8 @@ The video processing pipeline shall follow these principles:
 
 ### 2.3 Technology Evaluation
 
-GStreamer and OpenCV will be evaluated through practical benchmarking before finalizing the video processing implementation.
+GStreamer and OpenCV were evaluated through practical benchmarking before
+finalizing the video processing implementation.
 
 The evaluation will consider:
 
@@ -64,7 +65,8 @@ The final implementation will prioritize resource efficiency, low latency, and p
 |---|---|
 | Video Capture & Pipeline | GStreamer |
 | Image Processing | OpenCV |
-| AI Inference | To be determined |
-| Performance Benchmarking | GStreamer vs. OpenCV |
+| AI Inference | MediaPipe Face Landmarker (CPU) |
+| Performance Benchmarking | Completed; GStreamer + MediaPipe selected |
 
-**Note:** These are preliminary technology decisions and will be validated experimentally before final adoption.
+The MediaPipe pipeline comparison is documented in
+[`experiments/video_processing/mediapipe_pipeline/results.md`](../experiments/video_processing/mediapipe_pipeline/results.md).

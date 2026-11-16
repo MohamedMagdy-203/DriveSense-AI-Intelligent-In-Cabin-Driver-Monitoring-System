@@ -44,6 +44,7 @@ def create_landmarker():
         min_face_detection_confidence=0.5,
         min_face_presence_confidence=0.5,
         min_tracking_confidence=0.5,
+        output_facial_transformation_matrixes=True,
     )
     return mp.tasks.vision.FaceLandmarker.create_from_options(options)
 

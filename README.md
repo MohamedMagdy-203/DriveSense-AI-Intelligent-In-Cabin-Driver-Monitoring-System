@@ -157,7 +157,24 @@ Detailed project information is maintained in the documentation files:
 
 ## Current Status
 
-The repository currently contains the initial project structure and project documentation. The computer vision pipeline, model integration, temporal decision engine, alerting behavior, event logging, and automated tests have not yet been implemented.
+The MediaPipe Face Landmarker prototype is implemented and benchmarked on the
+CPU. GStreamer is the selected camera pipeline, with OpenCV used for frame
+conversion and display. EAR calibration and real-time eye-closure monitoring
+are available under `experiments/face_landmarker/`. The application-level
+temporal decision engine, alerting behavior, event logging, and production
+integration remain future work.
+
+## Experiments
+
+| Directory | Purpose |
+|---|---|
+| `experiments/face_landmarker/common/` | Shared MediaPipe, GStreamer, and EAR helpers. |
+| `experiments/face_landmarker/landmark_inspection/` | Inspect the 478 landmarks and visualize eye indices. |
+| `experiments/face_landmarker/ear_calibration/` | Calibrate EAR and save frame-level statistics. |
+| `experiments/face_landmarker/eye_closure/` | Monitor `OPEN`, `CLOSED`, and `PROLONGED CLOSURE` states. |
+| `experiments/face_landmarker/benchmark/` | CPU Face Landmarker benchmark and results. |
+| `experiments/video_processing/` | OpenCV, GStreamer, and MediaPipe pipeline benchmarks. |
+| `experiments/video_processing/summary/` | Aggregate video-processing benchmark results. |
 
 ## Planned Next Steps
 

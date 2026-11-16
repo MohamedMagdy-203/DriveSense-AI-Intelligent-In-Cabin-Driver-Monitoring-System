@@ -49,18 +49,22 @@
 | Web | WebAssembly (Wasm) + WebGPU/WebGL or XNNPACK CPU |
 | Android | minSdk 24 (arm64-v8a, x86_64), Kotlin/Java |
 | iOS | 13.0+, Swift/Objective-C |
-| Python | `mediapipe` pip package (CPU/GPU delegate) |
+| Python | `mediapipe` pip package (CPU delegate in the current Windows build) |
 | C++ | Native MediaPipe Tasks library |
 
-- **Hardware requirements:** Runs on CPU alone; GPU acceleration (WebGPU, OpenCL, CoreML, XNNPACK) improves throughput. No minimum GPU VRAM requirement documented — model is ~3.7 MB. Tested on Raspberry Pi (CPU-only).
+- **Hardware requirements:** Runs on CPU alone. The current Windows MediaPipe
+  Python build has GPU processing disabled, so this project uses the CPU
+  delegate. GPU acceleration may require a different supported runtime or
+  inference backend. No minimum GPU VRAM requirement documented — model is
+  ~3.7 MB. Tested on Raspberry Pi (CPU-only).
 - **License:** **Apache 2.0** — free for commercial use, modification, and redistribution with attribution. No usage limits or API calls required.
 
 ## 5. Webcam benchmark
 
-The live-stream benchmark is implemented in
-[`experiments/face_landmarker/face_landmarker_benchmark.py`](../experiments/face_landmarker/face_landmarker_benchmark.py).
-It runs three 60-second trials for each selected delegate and writes the
-measurements to [`experiments/face_landmarker/results.md`](../experiments/face_landmarker/results.md).
+The CPU benchmark is implemented in
+[`experiments/face_landmarker/benchmark/benchmark.py`](../experiments/face_landmarker/benchmark/benchmark.py).
+It runs three 60-second trials and writes the measurements to
+[`experiments/face_landmarker/benchmark/results.md`](../experiments/face_landmarker/benchmark/results.md).
 
 From the repository root:
 
@@ -69,12 +73,13 @@ python -m pip install -r requirements.txt
 Invoke-WebRequest `
   -Uri "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task" `
   -OutFile "models\face_landmarker.task"
-python experiments\face_landmarker\face_landmarker_benchmark.py `
-  --delegate both --duration 60 --trials 3
+python experiments\face_landmarker\benchmark\benchmark.py `
+  --duration 60 --trials 3
 ```
 
-The report keeps model latency separate from pipeline latency. Model latency is
-the time from `detect_async` submission to the asynchronous result callback.
+The benchmark uses the CPU delegate. The report keeps model latency separate
+from pipeline latency. Model latency is the time from `detect_async` submission
+to the asynchronous result callback.
 Pipeline latency includes camera capture, RGB conversion, submission, and
 optional preview display. Detection failures count callback frames with zero
 detected faces; frames whose callback has not arrived after the drain period

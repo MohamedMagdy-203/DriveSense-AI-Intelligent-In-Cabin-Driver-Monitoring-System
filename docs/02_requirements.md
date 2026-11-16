@@ -58,7 +58,8 @@ The system aims to identify potential signs of:
 ## 5. Engineering Constraints
 
 - The system shall not depend on a specific camera model.
-- Model inference shall be configurable for CPU or GPU execution.
+- Model inference shall support the currently available CPU configuration;
+  GPU execution is not available in the installed Windows MediaPipe build.
 - Input resolution and processing frequency shall be configurable.
 - Video processing shall avoid unnecessary frame buffering.
 - Core application logic shall remain independent of the underlying hardware.
@@ -70,7 +71,8 @@ The system will be evaluated using:
 - Video Processing FPS.
 - Model Inference FPS.
 - End-to-End Latency.
-- CPU and GPU Utilization.
+- CPU Utilization; GPU utilization may be evaluated separately if a
+  GPU-enabled inference backend is adopted.
 - RAM and GPU Memory Consumption.
 - Detection Performance.
 

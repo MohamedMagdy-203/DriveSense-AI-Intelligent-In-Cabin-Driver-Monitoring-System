@@ -185,6 +185,7 @@ environment used by the project:
 ./.venv/Scripts/python.exe experiments/face_landmarker/ear_calibration/calibrate.py
 ./.venv/Scripts/python.exe experiments/face_landmarker/eye_openness/calibrate.py
 ./.venv/Scripts/python.exe experiments/face_landmarker/eye_closure/monitor.py
+./.venv/Scripts/python.exe experiments/head_pose/monitor.py
 ```
 
 The eye-closure monitor uses GStreamer for camera capture, CPU MediaPipe for
@@ -203,6 +204,8 @@ conversion and display. The eye-closure monitor currently provides:
 - CSV event logging in `experiments/face_landmarker/eye_closure/events.csv`.
 - A 60-second, timestamp-based PERCLOS sliding window.
 - A calibrated landmark-based `closure_score` threshold of `0.8`.
+- A facial-transformation-matrix Head Pose module with a 2-second valid-sample
+  history.
 
 The closure score is a geometric calibration proxy, not direct measurement of
 80% eyelid or pupil coverage. Application-level temporal decision logic,
@@ -218,6 +221,7 @@ alerting, and production integration remain future work.
 | `experiments/face_landmarker/eye_closure/` | Monitor eye states, blink events, calibrated closure score, and PERCLOS. |
 | `experiments/face_landmarker/eye_openness/` | Calibrate open, partial, and closed eye geometric baselines. |
 | `experiments/face_landmarker/benchmark/` | CPU Face Landmarker benchmark and results. |
+| `experiments/head_pose/` | Inspect transformation matrices, estimate relative rotation vectors, and store short-term history. |
 | `experiments/video_processing/` | OpenCV, GStreamer, and MediaPipe pipeline benchmarks. |
 | `experiments/video_processing/summary/` | Aggregate video-processing benchmark results. |
 

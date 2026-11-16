@@ -10,10 +10,11 @@ The initial development target is a PC or laptop with an RGB webcam and local pr
 
 ### Project Structure
 
-- Created the initial Python project structure under `src/drivesense/`.
-- Added placeholder modules for camera input, detection, fatigue analysis, distraction analysis, alerts, configuration, and the application entry point.
-- Added the initial test package and test placeholders.
-- Added folders for raw data, processed data, models, configuration, scripts, notebooks, and logs.
+- Added the initial Python project structure under `src/drivesense/`.
+- Organized reproducible computer-vision experiments under `experiments/`.
+- Added shared CPU-only MediaPipe Face Landmarker and GStreamer runtime helpers.
+- Added landmark inspection, EAR calibration, eye-openness calibration, and eye-closure monitoring experiments.
+- Added separate OpenCV, GStreamer, and MediaPipe pipeline benchmarks with stored results.
 - Added `.gitignore`, `.env.example`, and `requirements.txt`.
 
 ### Documentation
@@ -21,6 +22,8 @@ The initial development target is a PC or laptop with an RGB webcam and local pr
 - Added the problem definition document.
 - Added functional and non-functional system requirements.
 - Added the development hardware baseline.
+- Documented the CPU-only MediaPipe constraint and benchmark findings.
+- Documented the calibrated landmark-based eye-openness and PERCLOS approach.
 - Added a knowledge-base directory for research and technical references covering:
   - Drowsiness detection
   - Mobile phone usage
@@ -49,7 +52,22 @@ DriveSense-AI-Intelligent-In-Cabin-Driver-Monitoring-System/
 │   └── test_distraction.py
 ├── docs/
 │   ├── 01_problem_definition.md
-│   └── 02_requirements.md
+│   ├── 02_requirements.md
+│   ├── 03_system_architecture.md
+│   └── 04_model_selection.md
+├── experiments/
+│   ├── face_landmarker/
+│   │   ├── benchmark/
+│   │   ├── common/
+│   │   ├── ear_calibration/
+│   │   ├── eye_closure/
+│   │   ├── eye_openness/
+│   │   └── landmark_inspection/
+│   └── video_processing/
+│       ├── gstreamer/
+│       ├── mediapipe_pipeline/
+│       ├── opencv/
+│       └── summary/
 ├── knowledge_base/
 │   ├── drowsiness_detection.md
 │   ├── phone_usage.md
@@ -154,15 +172,41 @@ Detailed project information is maintained in the documentation files:
 
 - [Problem definition](docs/01_problem_definition.md): problem statement, purpose, advantages, project scope, limitations, and expected outcome.
 - [System requirements](docs/02_requirements.md): operational context, functional requirements, non-functional requirements, hardware baseline, engineering constraints, evaluation metrics, and scope limitations.
+- [System architecture](docs/03_system_architecture.md): current pipeline structure and component responsibilities.
+- [Model selection](docs/04_model_selection.md): MediaPipe CPU decision and benchmark constraints.
+
+## Running the Experiments
+
+The commands below assume the repository root and the Windows virtual
+environment used by the project:
+
+```bash
+./.venv/Scripts/python.exe experiments/face_landmarker/landmark_inspection/inspect.py
+./.venv/Scripts/python.exe experiments/face_landmarker/ear_calibration/calibrate.py
+./.venv/Scripts/python.exe experiments/face_landmarker/eye_openness/calibrate.py
+./.venv/Scripts/python.exe experiments/face_landmarker/eye_closure/monitor.py
+```
+
+The eye-closure monitor uses GStreamer for camera capture, CPU MediaPipe for
+landmarks, and OpenCV for conversion and display. Press `Q` or `Esc` to stop
+the live monitor.
 
 ## Current Status
 
 The MediaPipe Face Landmarker prototype is implemented and benchmarked on the
 CPU. GStreamer is the selected camera pipeline, with OpenCV used for frame
-conversion and display. EAR calibration and real-time eye-closure monitoring
-are available under `experiments/face_landmarker/`. The application-level
-temporal decision engine, alerting behavior, event logging, and production
-integration remain future work.
+conversion and display. The eye-closure monitor currently provides:
+
+- Per-frame right-eye, left-eye, and average EAR.
+- `OPEN`, `CLOSED`, and `PROLONGED CLOSURE` states.
+- Normal blink and prolonged-closure counters.
+- CSV event logging in `experiments/face_landmarker/eye_closure/events.csv`.
+- A 60-second, timestamp-based PERCLOS sliding window.
+- A calibrated landmark-based `closure_score` threshold of `0.8`.
+
+The closure score is a geometric calibration proxy, not direct measurement of
+80% eyelid or pupil coverage. Application-level temporal decision logic,
+alerting, and production integration remain future work.
 
 ## Experiments
 
@@ -171,20 +215,18 @@ integration remain future work.
 | `experiments/face_landmarker/common/` | Shared MediaPipe, GStreamer, and EAR helpers. |
 | `experiments/face_landmarker/landmark_inspection/` | Inspect the 478 landmarks and visualize eye indices. |
 | `experiments/face_landmarker/ear_calibration/` | Calibrate EAR and save frame-level statistics. |
-| `experiments/face_landmarker/eye_closure/` | Monitor `OPEN`, `CLOSED`, and `PROLONGED CLOSURE` states. |
+| `experiments/face_landmarker/eye_closure/` | Monitor eye states, blink events, calibrated closure score, and PERCLOS. |
+| `experiments/face_landmarker/eye_openness/` | Calibrate open, partial, and closed eye geometric baselines. |
 | `experiments/face_landmarker/benchmark/` | CPU Face Landmarker benchmark and results. |
 | `experiments/video_processing/` | OpenCV, GStreamer, and MediaPipe pipeline benchmarks. |
 | `experiments/video_processing/summary/` | Aggregate video-processing benchmark results. |
 
 ## Planned Next Steps
 
-1. Select and configure the computer vision dependencies.
-2. Implement configurable RGB camera capture.
-3. Implement face, eye, and head-pose detection.
-4. Add drowsiness and visual-distraction analysis.
-5. Add mobile phone detection and interaction analysis.
-6. Implement the Temporal Decision Engine.
-7. Add visual and audio alerts.
-8. Add event logging and timestamp recording.
-9. Benchmark FPS, latency, resource usage, and detection performance.
-10. Add unit and integration tests.
+1. Validate the calibrated closure score across additional users and lighting conditions.
+2. Evaluate whether the geometric proxy is sufficient for the required PERCLOS use case.
+3. Implement the Temporal Decision Engine for combined fatigue signals.
+4. Add configurable visual and audio alerts.
+5. Add head-pose, visual-distraction, and mobile-phone analysis.
+6. Add focused unit and integration tests.
+7. Integrate the validated prototype into `src/drivesense/`.

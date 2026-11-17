@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from src.visual_distraction.glance_tracker import GlanceEvent
+from drivesense.visual_distraction.glance_tracker import GlanceEvent
 
 
 class GlanceHistory:

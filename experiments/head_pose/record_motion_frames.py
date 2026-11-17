@@ -12,9 +12,9 @@ import cv2
 import numpy as np
 
 if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
 
-from experiments.face_landmarker.common.runtime import (
+from drivesense.face.runtime import (
     WINDOW_NAME,
     create_landmarker,
     face_image,

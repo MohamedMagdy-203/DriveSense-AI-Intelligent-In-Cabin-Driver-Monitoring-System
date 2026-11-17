@@ -10,7 +10,7 @@ from pathlib import Path
 import numpy as np
 
 if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
 
 MOTION_PATH = Path(__file__).with_name("motion_frames.csv")
 OUTPUT_PATH = Path(__file__).with_name("axis_validation_results.md")

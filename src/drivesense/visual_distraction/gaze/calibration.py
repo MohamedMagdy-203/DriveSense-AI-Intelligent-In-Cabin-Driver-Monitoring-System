@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import statistics
 
-from experiments.face_landmarker.gaze.gaze import NormalizedIrisPosition
+from drivesense.visual_distraction.gaze.geometry import NormalizedIrisPosition
 
 
 @dataclass(frozen=True)

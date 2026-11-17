@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import csv
 from datetime import datetime
-from collections import deque
 import time
 import sys
 from pathlib import Path
@@ -12,9 +11,9 @@ from pathlib import Path
 import cv2
 
 if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
 
-from experiments.face_landmarker.common.runtime import (
+from drivesense.face.runtime import (
     EAR_POINTS,
     WINDOW_NAME,
     create_landmarker,
@@ -24,6 +23,10 @@ from experiments.face_landmarker.common.runtime import (
     read_gstreamer_frame,
     start_gstreamer,
     stop_gstreamer,
+)
+from drivesense.drowsiness.metrics import (
+    PerclosWindow,
+    calibrated_closure_score,
 )
 
 EAR_CLOSED_THRESHOLD = 0.15
@@ -45,53 +48,6 @@ EVENT_FIELDS = [
 ]
 
 
-class PerclosWindow:
-    """Track closed and observed durations over a rolling time window."""
-
-    def __init__(self, window_ms: int) -> None:
-        self.window_ms = window_ms
-        self.segments: deque[tuple[int, int, bool]] = deque()
-        self.last_timestamp_ms: int | None = None
-        self.last_closed: bool | None = None
-
-    def update(self, timestamp_ms: int, closed: bool | None) -> float:
-        if (
-            closed is not None
-            and self.last_timestamp_ms is not None
-            and self.last_closed is not None
-            and timestamp_ms > self.last_timestamp_ms
-        ):
-            self.segments.append(
-                (self.last_timestamp_ms, timestamp_ms, self.last_closed)
-            )
-
-        if closed is None:
-            self.last_timestamp_ms = None
-            self.last_closed = None
-        else:
-            self.last_timestamp_ms = timestamp_ms
-            self.last_closed = closed
-
-        window_start = timestamp_ms - self.window_ms
-        while self.segments and self.segments[0][1] <= window_start:
-            self.segments.popleft()
-
-        closed_duration = 0
-        observed_duration = 0
-        for start_ms, end_ms, was_closed in self.segments:
-            clipped_start = max(start_ms, window_start)
-            if end_ms <= clipped_start:
-                continue
-            duration = end_ms - clipped_start
-            observed_duration += duration
-            if was_closed:
-                closed_duration += duration
-
-        if observed_duration == 0:
-            return 0.0
-        return 100 * closed_duration / observed_duration
-
-
 def _create_event_log():
     file_exists = EVENTS_PATH.is_file() and EVENTS_PATH.stat().st_size > 0
     if file_exists:
@@ -111,19 +67,6 @@ def _create_event_log():
         writer.writeheader()
         log_file.flush()
     return log_file, writer
-
-
-def _closure_score(openness: float) -> float:
-    baseline_range = OPENNESS_OPEN_BASELINE - OPENNESS_CLOSED_BASELINE
-    if baseline_range <= 0:
-        raise ValueError("Open and closed openness baselines must be ordered.")
-    return min(
-        1.0,
-        max(
-            0.0,
-            (OPENNESS_OPEN_BASELINE - openness) / baseline_range,
-        ),
-    )
 
 
 def main() -> None:
@@ -200,7 +143,11 @@ def main() -> None:
                         eye_openness(face, EAR_POINTS["right_eye"])
                         + eye_openness(face, EAR_POINTS["left_eye"])
                     ) / 2
-                    closure_score = _closure_score(openness)
+                    closure_score = calibrated_closure_score(
+                        openness,
+                        OPENNESS_OPEN_BASELINE,
+                        OPENNESS_CLOSED_BASELINE,
+                    )
                     if average_ear < EAR_CLOSED_THRESHOLD:
                         if closure_started_ms is None:
                             closure_started_ms = timestamp_ms

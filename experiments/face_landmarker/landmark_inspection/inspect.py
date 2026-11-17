@@ -6,12 +6,15 @@ import time
 import sys
 from pathlib import Path
 
+if __package__ in (None, ""):
+    script_directory = str(Path(__file__).resolve().parent)
+    if script_directory in sys.path:
+        sys.path.remove(script_directory)
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+
 import cv2
 
-if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
-
-from experiments.face_landmarker.common.runtime import (
+from drivesense.face.runtime import (
     EAR_POINTS,
     EYE_GROUPS,
     LEFT_EYE_INDICES,

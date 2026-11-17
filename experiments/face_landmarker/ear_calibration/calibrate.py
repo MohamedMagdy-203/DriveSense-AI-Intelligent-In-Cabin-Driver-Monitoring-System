@@ -11,9 +11,9 @@ import cv2
 import numpy as np
 
 if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
 
-from experiments.face_landmarker.common.runtime import (
+from drivesense.face.runtime import (
     EAR_POINTS,
     WINDOW_NAME,
     create_landmarker,

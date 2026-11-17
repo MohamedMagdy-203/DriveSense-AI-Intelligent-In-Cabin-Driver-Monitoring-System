@@ -6,7 +6,8 @@ import time
 from collections import deque
 from dataclasses import dataclass
 
-from experiments.head_pose.head_pose import (
+from drivesense.config import load_config
+from drivesense.head_pose.pose import (
     HeadPoseEstimate,
     HeadPoseStatus,
 )
@@ -35,7 +36,9 @@ class TemporalState:
 class HeadPoseTemporalAnalyzer:
     """Track valid head pose estimates over a short rolling time window."""
 
-    def __init__(self, window_seconds: float = 2.0) -> None:
+    def __init__(self, window_seconds: float | None = None) -> None:
+        if window_seconds is None:
+            window_seconds = load_config().temporal.head_pose_window_seconds
         if window_seconds <= 0:
             raise ValueError("The temporal history window must be positive.")
         self.window_seconds = window_seconds

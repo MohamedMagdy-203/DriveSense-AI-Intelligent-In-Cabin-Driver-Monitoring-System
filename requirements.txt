@@ -1,3 +1,5 @@
 opencv-python
 psutil
 mediapipe
+PyYAML
+pytest

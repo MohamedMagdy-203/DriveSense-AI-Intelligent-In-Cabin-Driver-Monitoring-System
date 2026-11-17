@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "drivesense-ai"
+version = "0.1.0"
+description = "Modular in-cabin driver monitoring system prototype"
+requires-python = ">=3.12"
+dependencies = [
+    "mediapipe",
+    "numpy",
+    "opencv-python",
+    "psutil",
+    "PyYAML",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

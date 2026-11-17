@@ -9,9 +9,9 @@ from pathlib import Path
 import cv2
 
 if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
 
-from experiments.face_landmarker.common.runtime import (
+from drivesense.face.runtime import (
     WINDOW_NAME,
     create_landmarker,
     face_image,
@@ -19,8 +19,8 @@ from experiments.face_landmarker.common.runtime import (
     start_gstreamer,
     stop_gstreamer,
 )
-from experiments.head_pose.head_pose import HeadPoseEstimator, HeadPoseStatus
-from experiments.head_pose.temporal import HeadPoseTemporalAnalyzer
+from drivesense.head_pose.pose import HeadPoseEstimator, HeadPoseStatus
+from drivesense.head_pose.temporal import HeadPoseTemporalAnalyzer
 
 
 def main() -> None:

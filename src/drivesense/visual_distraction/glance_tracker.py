@@ -5,7 +5,7 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass
 
-from src.visual_distraction.assessment import GazeAssessmentStatus
+from drivesense.visual_distraction.assessment import GazeAssessmentStatus
 
 
 @dataclass(frozen=True)

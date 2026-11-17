@@ -1,0 +1,19 @@
+camera:
+  index: 0
+  width: 640
+  height: 480
+  window_name: "MediaPipe Face Landmarker"
+
+mediapipe:
+  model_path: "models/face_landmarker.task"
+  delegate: "CPU"
+  min_face_detection_confidence: 0.5
+  min_face_presence_confidence: 0.5
+  min_tracking_confidence: 0.5
+
+temporal:
+  head_pose_window_seconds: 2.0
+  long_glance_seconds: 3.0
+  glance_window_seconds: 30.0
+  reengagement_seconds: 2.0
+  cumulative_glance_seconds: 10.0

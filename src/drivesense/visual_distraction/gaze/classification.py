@@ -4,14 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from pathlib import Path
-import sys
-
-if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
-
-from experiments.face_landmarker.gaze.calibration import EyeCalibration
-from experiments.face_landmarker.gaze.gaze import NormalizedIrisPosition
+from drivesense.visual_distraction.gaze.calibration import EyeCalibration
+from drivesense.visual_distraction.gaze.geometry import NormalizedIrisPosition
 
 
 class GazeDirection(str, Enum):

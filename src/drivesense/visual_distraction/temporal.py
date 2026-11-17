@@ -6,8 +6,9 @@ import time
 from dataclasses import dataclass
 from enum import Enum
 
-from src.visual_distraction.assessment import GazeAssessmentStatus
-from src.visual_distraction.glance_history import GlanceHistory
+from drivesense.config import load_config
+from drivesense.visual_distraction.assessment import GazeAssessmentStatus
+from drivesense.visual_distraction.glance_history import GlanceHistory
 
 
 class DistractionStatus(str, Enum):
@@ -29,10 +30,11 @@ class DistractionAssessment:
 class TemporalDistractionAnalyzer:
     """Evaluate glance duration and repetition over time."""
 
-    LONG_GLANCE_SECONDS = 3.0
-    WINDOW_SECONDS = 30.0
-    REENGAGEMENT_SECONDS = 2.0
-    CUMULATIVE_GLANCE_SECONDS = 10.0
+    _CONFIG = load_config().temporal
+    LONG_GLANCE_SECONDS = _CONFIG.long_glance_seconds
+    WINDOW_SECONDS = _CONFIG.glance_window_seconds
+    REENGAGEMENT_SECONDS = _CONFIG.reengagement_seconds
+    CUMULATIVE_GLANCE_SECONDS = _CONFIG.cumulative_glance_seconds
 
     def __init__(self) -> None:
         self._reference_start_time: float | None = None

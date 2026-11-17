@@ -10,13 +10,16 @@ import cv2
 import mediapipe as mp
 import numpy as np
 
+from drivesense.config import load_config
 
+
+CONFIG = load_config()
 ROOT = Path(__file__).resolve().parents[3]
-MODEL_PATH = ROOT / "models" / "face_landmarker.task"
-WIDTH = 640
-HEIGHT = 480
-CAMERA_INDEX = 0
-WINDOW_NAME = "MediaPipe Face Landmarker"
+MODEL_PATH = CONFIG.mediapipe.model_path
+WIDTH = CONFIG.camera.width
+HEIGHT = CONFIG.camera.height
+CAMERA_INDEX = CONFIG.camera.index
+WINDOW_NAME = CONFIG.camera.window_name
 
 RIGHT_EYE_INDICES = (
     33, 7, 163, 144, 145, 153, 154, 155,
@@ -41,9 +44,13 @@ def create_landmarker():
         ),
         running_mode=mp.tasks.vision.RunningMode.VIDEO,
         num_faces=1,
-        min_face_detection_confidence=0.5,
-        min_face_presence_confidence=0.5,
-        min_tracking_confidence=0.5,
+        min_face_detection_confidence=(
+            CONFIG.mediapipe.min_face_detection_confidence
+        ),
+        min_face_presence_confidence=(
+            CONFIG.mediapipe.min_face_presence_confidence
+        ),
+        min_tracking_confidence=CONFIG.mediapipe.min_tracking_confidence,
         output_facial_transformation_matrixes=True,
     )
     return mp.tasks.vision.FaceLandmarker.create_from_options(options)

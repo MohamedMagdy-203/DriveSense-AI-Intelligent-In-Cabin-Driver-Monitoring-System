@@ -10,9 +10,9 @@ from pathlib import Path
 import cv2
 
 if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
 
-from experiments.face_landmarker.common.runtime import (
+from drivesense.face.runtime import (
     WINDOW_NAME,
     create_landmarker,
     face_image,
@@ -20,9 +20,9 @@ from experiments.face_landmarker.common.runtime import (
     start_gstreamer,
     stop_gstreamer,
 )
-from experiments.face_landmarker.gaze.calibration import EyeCalibration
-from experiments.face_landmarker.gaze.classification import classify_gaze
-from experiments.face_landmarker.gaze.gaze import normalized_iris_positions
+from drivesense.visual_distraction.gaze.calibration import EyeCalibration
+from drivesense.visual_distraction.gaze.classification import classify_gaze
+from drivesense.visual_distraction.gaze.geometry import normalized_iris_positions
 
 CALIBRATION_PATH = Path(__file__).with_name("calibration_results.md")
 CALIBRATION_ROW = re.compile(

@@ -6,11 +6,11 @@ from dataclasses import dataclass
 from enum import Enum
 import math
 
-from experiments.face_landmarker.gaze.classification import (
+from drivesense.visual_distraction.gaze.classification import (
     GazeClassification,
     GazeDirection,
 )
-from experiments.head_pose.head_pose import HeadPoseEstimate, HeadPoseStatus
+from drivesense.head_pose.pose import HeadPoseEstimate, HeadPoseStatus
 
 
 class GazeAssessmentStatus(str, Enum):

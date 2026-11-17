@@ -11,43 +11,43 @@ rotation_vector = log(R_relative)
 
 The matrix scale is removed before calculating the relative rotation. Rotation-vector components are reported in degrees and are not named Yaw, Pitch, or Roll.
 
-- Input matrices: `355`
-- Output vectors: `355`
+- Input matrices: `410`
+- Output vectors: `410`
 - Per-frame vectors: `motion_rotation_vectors.csv`
 
 ## Neutral
 
-- Frames: `90`
+- Frames: `89`
 
 | Component | Median (deg) | P10 (deg) | P90 (deg) |
 |---|---:|---:|---:|
-| X | -0.02 | -0.40 | +0.57 |
-| Y | +0.00 | -0.20 | +0.18 |
-| Z | +0.01 | -0.11 | +0.10 |
+| X | -0.03 | -0.16 | +0.27 |
+| Y | +0.02 | -0.15 | +0.20 |
+| Z | +0.01 | -0.22 | +0.22 |
 
 - Expected sign: `N/A` for the Neutral reference.
 
 ## Turn Left
 
-- Frames: `14`
+- Frames: `85`
 
 | Component | Median (deg) | P10 (deg) | P90 (deg) |
 |---|---:|---:|---:|
-| X | +3.56 | +1.12 | +5.71 |
-| Y | +39.57 | +24.87 | +49.23 |
-| Z | -10.54 | -14.57 | -9.53 |
+| X | -1.67 | -3.01 | -0.23 |
+| Y | +54.87 | +53.37 | +55.94 |
+| Z | -15.15 | -16.18 | -14.40 |
 
-- Expected sign: `Z negative`; preserved in `100.00%` of frames.
+- Expected sign: `Z negative`; preserved in `98.82%` of frames.
 
 ## Turn Right
 
-- Frames: `73`
+- Frames: `58`
 
 | Component | Median (deg) | P10 (deg) | P90 (deg) |
 |---|---:|---:|---:|
-| X | -2.90 | -6.43 | -0.85 |
-| Y | -60.18 | -62.78 | -52.47 |
-| Z | +15.89 | +13.98 | +18.92 |
+| X | -7.58 | -9.37 | -4.54 |
+| Y | -48.03 | -57.60 | -23.04 |
+| Z | +19.09 | +5.58 | +22.84 |
 
 - Expected sign: `Z positive`; preserved in `100.00%` of frames.
 
@@ -57,9 +57,9 @@ The matrix scale is removed before calculating the relative rotation. Rotation-v
 
 | Component | Median (deg) | P10 (deg) | P90 (deg) |
 |---|---:|---:|---:|
-| X | -26.35 | -26.70 | -25.75 |
-| Y | -4.86 | -5.71 | -4.62 |
-| Z | -1.75 | -2.01 | -1.47 |
+| X | -40.57 | -46.05 | -39.56 |
+| Y | -4.57 | -4.89 | -4.19 |
+| Z | -5.16 | -5.76 | -4.28 |
 
 - Expected sign: `X negative`; preserved in `100.00%` of frames.
 
@@ -69,8 +69,8 @@ The matrix scale is removed before calculating the relative rotation. Rotation-v
 
 | Component | Median (deg) | P10 (deg) | P90 (deg) |
 |---|---:|---:|---:|
-| X | +16.53 | +15.93 | +18.60 |
-| Y | +0.97 | +0.49 | +1.45 |
-| Z | -1.64 | -1.91 | -1.48 |
+| X | +25.96 | +25.18 | +26.63 |
+| Y | -0.12 | -0.80 | +0.44 |
+| Z | -3.13 | -3.97 | -2.38 |
 
 - Expected sign: `X positive`; preserved in `100.00%` of frames.

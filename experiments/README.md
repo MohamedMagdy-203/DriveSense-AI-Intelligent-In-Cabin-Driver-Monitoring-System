@@ -1,0 +1,21 @@
+# Experiments
+
+The experiments directory preserves the project's calibration, benchmarking,
+data-collection, validation, and live-demo history. Scripts here are not the
+production API.
+
+Reusable algorithms live under `src/drivesense/`. Experiment scripts import
+those modules and add procedures, camera interaction, reporting, or
+visualization specific to the experiment.
+
+Main areas:
+
+- `face_landmarker/`: landmark inspection, eye calibration, eye closure,
+  geometric gaze calibration, and live demos.
+- `head_pose/`: matrix inspection, controlled-motion recording, axis
+  validation, and live monitoring.
+- `video_processing/`: OpenCV, GStreamer, and MediaPipe benchmarks.
+
+Hardware-dependent scripts should be run manually with the configured Windows
+virtual environment. Their stored CSV and Markdown outputs are research
+artifacts and should not be treated as production validation.

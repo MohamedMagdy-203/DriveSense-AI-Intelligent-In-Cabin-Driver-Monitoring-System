@@ -5,15 +5,15 @@ is the average eyelid aperture divided by eye-corner width for both eyes. This
 is a geometric openness proxy, not direct pupil-occlusion segmentation.
 
 - Duration per state: `30 seconds`
-- Valid open-eye frames: `883`
-- Valid partial-closure frames: `884`
-- Valid closed-eye frames: `884`
+- Valid open-eye frames: `878`
+- Valid partial-closure frames: `883`
+- Valid closed-eye frames: `883`
 
 | State | Min | Max | Mean | Std Dev | 5th percentile | 95th percentile |
 |---|---:|---:|---:|---:|---:|---:|
-| Open Eyes | 0.1793 | 0.4610 | 0.3650 | 0.0428 | 0.2894 | 0.4247 |
-| Partial Closure | 0.1786 | 0.3092 | 0.2202 | 0.0223 | 0.1852 | 0.2649 |
-| Closed Eyes | 0.0338 | 0.0905 | 0.0608 | 0.0104 | 0.0469 | 0.0821 |
+| Open Eyes | 0.0363 | 0.4347 | 0.3033 | 0.0747 | 0.1842 | 0.4140 |
+| Partial Closure | 0.1400 | 0.4361 | 0.1928 | 0.0479 | 0.1539 | 0.2201 |
+| Closed Eyes | 0.0399 | 0.3995 | 0.0816 | 0.0355 | 0.0510 | 0.1093 |
 
 ## Provisional calibrated mapping
 
@@ -26,5 +26,5 @@ closure = clamp((open_baseline - current_openness)
 ```
 
 Using the collected means, the partial-closure estimate is
-`47.6%` of the open-to-closed range. This is only a calibration
+`49.9%` of the open-to-closed range. This is only a calibration
 check; it is not direct measurement of 80% eyelid or pupil coverage.

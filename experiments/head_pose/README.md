@@ -6,7 +6,8 @@ additional model is used.
 
 ## Current module
 
-[`head_pose.py`](./head_pose.py) provides `HeadPoseEstimator`:
+[`src/drivesense/head_pose/pose.py`](../../src/drivesense/head_pose/pose.py)
+provides `HeadPoseEstimator`:
 
 - Removes the uniform scale from each `4x4` facial transformation matrix.
 - Uses the first valid matrix as the Neutral reference.
@@ -15,13 +16,17 @@ additional model is used.
   `magnitude_deg`.
 - Reports `OK`, `NO_FACE`, and `NO_MATRIX` explicitly.
 
-[`temporal.py`](./temporal.py) provides `HeadPoseTemporalAnalyzer`:
+[`src/drivesense/head_pose/temporal.py`](../../src/drivesense/head_pose/temporal.py)
+provides `HeadPoseTemporalAnalyzer`:
 
 - Adds `time.monotonic()` timestamps.
 - Retains valid samples from the latest 2-second window.
 - Keeps the current `NO_FACE` or `NO_MATRIX` state without adding it to the
   rotation history.
 - Does not apply smoothing or movement thresholds yet.
+
+The reusable implementations are production modules; the scripts in this
+directory are experiment-specific live demos and matrix-analysis tools.
 
 Run the live module demo:
 

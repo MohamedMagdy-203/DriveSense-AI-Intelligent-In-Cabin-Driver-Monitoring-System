@@ -66,7 +66,7 @@ Glance Event Tracking
 Temporal Distraction Analysis
         |
         v
-ATTENTIVE / DISTRACTED
+ATTENTIVE / POTENTIAL_DISTRACTION
 ```
 
 ### 1. Driving Gaze Assessment
@@ -77,15 +77,14 @@ the primary input and retain Head Pose as a supporting signal.
 
 ### 2. Glance Event Tracking
 
-Track each transition into and out of an off-reference gaze state. Each event
-should retain at least:
+Track each transition into and out of an off-reference gaze state. Each event currently retains:
 
 - Start timestamp.
 - End timestamp.
 - Duration.
-- Gaze direction and per-eye classification.
-- Head Pose rotation vector and availability status.
-- Whether the face or transformation matrix was temporarily unavailable.
+
+Gaze and head-pose details remain inputs to the assessment layer; enriching
+events with those signals is future work.
 
 ### 3. Temporal Distraction Analysis
 

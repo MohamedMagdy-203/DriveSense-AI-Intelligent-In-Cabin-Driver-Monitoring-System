@@ -44,7 +44,7 @@ classifications are applied yet.
 
 ## Direction classification
 
-`classification.py` uses each eye's observed calibration range as its natural
+The production classification module uses each eye's observed calibration range as its natural
 gaze band:
 
 - Inside `[min, max]`: `CENTER` for that axis.

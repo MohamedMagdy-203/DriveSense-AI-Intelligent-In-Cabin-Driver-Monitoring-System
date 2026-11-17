@@ -3,24 +3,40 @@
 
 ## 1. High-Level Architecture
 
-The following diagram illustrates the main components
-and data flow of DriveSense AI.
+The current implementation separates reusable production modules from
+calibration, benchmark, and live-demo scripts:
 
 ```mermaid
 flowchart TD
-    A[Camera Input] --> B[Video Processing]
-
-    B --> C[Drowsiness Detection]
-    B --> D[Visual Distraction Detection]
-    B --> E[Phone Usage Detection]
-
-    C --> F[Temporal Decision Engine]
-    D --> F
-    E --> F
-
-    F --> G[Alert System]
-    F --> H[Event Logging]
+    A[Camera / GStreamer] --> B[Face Runtime]
+    B --> C[Face Landmarks and Matrices]
+    C --> D[Drowsiness Experiments]
+    C --> E[Gaze Geometry and Classification]
+    C --> F[Head Pose Estimation]
+    E --> G[Driving Gaze Assessment]
+    F --> G
+    G --> H[Glance Tracker]
+    H --> I[Glance History]
+    I --> J[Temporal Distraction Analyzer]
 ```
+
+`src/drivesense/` contains reusable implementation code. `experiments/`
+contains procedures and scripts that collect data, run calibration, benchmark
+performance, or display live experimental output. Experiment modules depend on
+production modules; production modules do not import experiment scripts.
+
+The current visual-distraction path is:
+
+```text
+Gaze Classification
+    -> Driving Gaze Assessment
+    -> Glance Tracker
+    -> Glance History
+    -> Temporal Distraction Analyzer
+```
+
+`POTENTIAL_DISTRACTION` is a preliminary temporal result, not a regulatory or
+production distraction decision.
 ## 2. Video Processing Strategy
 
 ### 2.1 Design Approach
@@ -70,3 +86,18 @@ The final implementation will prioritize resource efficiency, low latency, and p
 
 The MediaPipe pipeline comparison is documented in
 [`experiments/video_processing/mediapipe_pipeline/results.md`](../experiments/video_processing/mediapipe_pipeline/results.md).
+
+## 3. Production Modules
+
+| Module | Responsibility |
+|---|---|
+| `drivesense.config` | Load and validate YAML runtime configuration. |
+| `drivesense.face.runtime` | CPU MediaPipe Face Landmarker and GStreamer helpers. |
+| `drivesense.visual_distraction.gaze` | Iris geometry, calibration, and gaze classification. |
+| `drivesense.head_pose` | Relative rotation-vector estimation and valid-sample history. |
+| `drivesense.visual_distraction` | Gaze assessment, glance tracking, history, and temporal analysis. |
+
+The model, camera, and prototype temporal values are defined in
+[`configs/default.yaml`](../configs/default.yaml). The 3/10-within-30/2-second
+values remain explicitly documented prototype criteria inspired by evaluation
+examples, not universal scientific thresholds.

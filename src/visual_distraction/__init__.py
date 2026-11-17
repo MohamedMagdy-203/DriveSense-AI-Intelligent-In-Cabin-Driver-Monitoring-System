@@ -1,0 +1,1 @@
+"""Visual-distraction assessment components."""

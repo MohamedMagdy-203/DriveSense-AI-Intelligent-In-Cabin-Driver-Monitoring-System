@@ -174,6 +174,7 @@ Detailed project information is maintained in the documentation files:
 - [System requirements](docs/02_requirements.md): operational context, functional requirements, non-functional requirements, hardware baseline, engineering constraints, evaluation metrics, and scope limitations.
 - [System architecture](docs/03_system_architecture.md): current pipeline structure and component responsibilities.
 - [Model selection](docs/04_model_selection.md): MediaPipe CPU decision and benchmark constraints.
+- [Driving gaze and distraction design](docs/05_driving_gaze_and_distraction.md): adopted signal roles, camera reference, and temporal-processing plan.
 
 ## Running the Experiments
 

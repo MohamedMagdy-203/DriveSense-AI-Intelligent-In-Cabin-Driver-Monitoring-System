@@ -1,0 +1,19 @@
+{
+  "model": "yolo11n.pt",
+  "image_size": 640,
+  "validation": {
+    "metrics/precision(B)": 0.8808555401866363,
+    "metrics/recall(B)": 0.8649318463444857,
+    "metrics/mAP50(B)": 0.9168415012672791,
+    "metrics/mAP50-95(B)": 0.6804499556631436,
+    "fitness": 0.6804499556631436
+  },
+  "test": {
+    "metrics/precision(B)": 0.8835438040664376,
+    "metrics/recall(B)": 0.8201948627103631,
+    "metrics/mAP50(B)": 0.8804692703050718,
+    "metrics/mAP50-95(B)": 0.6481428968364857,
+    "fitness": 0.6481428968364857
+  },
+  "confidence_threshold": 0.25
+}

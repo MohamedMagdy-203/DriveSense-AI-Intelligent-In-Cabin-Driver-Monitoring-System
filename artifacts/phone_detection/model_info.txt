@@ -1,0 +1,29 @@
+DriveSense AI - Phone Detection Model
+===================================
+Model: yolo11n.pt
+Image size: 640
+Epochs: 100
+Batch size: 16
+Optimizer: AdamW
+Learning rate: 0.001
+Patience: 20
+Seed: 42
+Workers: 8
+Device: 0
+Dataset yaml: /kaggle/working/phone_data_fixed.yaml
+Dataset root: /kaggle/input/datasets/mohamedmagdyrizk/phone-detection-dataset/phone_detection
+Class 0: phone
+
+Validation metrics:
+metrics/precision(B): 0.8808555401866363
+metrics/recall(B): 0.8649318463444857
+metrics/mAP50(B): 0.9168415012672791
+metrics/mAP50-95(B): 0.6804499556631436
+fitness: 0.6804499556631436
+
+Test metrics:
+metrics/precision(B): 0.8835438040664376
+metrics/recall(B): 0.8201948627103631
+metrics/mAP50(B): 0.8804692703050718
+metrics/mAP50-95(B): 0.6481428968364857
+fitness: 0.6481428968364857

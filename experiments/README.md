@@ -15,6 +15,10 @@ Main areas:
 - `head_pose/`: matrix inspection, controlled-motion recording, axis
   validation, and live monitoring.
 - `video_processing/`: OpenCV, GStreamer, and MediaPipe benchmarks.
+- `../notebooks/`: dataset preparation and phone-object-detection training
+  notebooks.
+- `../artifacts/phone_detection/`: final trained-model outputs, plots,
+  metrics, and representative inference examples.
 
 Hardware-dependent scripts should be run manually with the configured Windows
 virtual environment. Their stored CSV and Markdown outputs are research

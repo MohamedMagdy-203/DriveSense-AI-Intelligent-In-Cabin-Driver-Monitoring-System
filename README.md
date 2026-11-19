@@ -37,6 +37,12 @@ calibration history.
 │   ├── head_pose/
 │   └── video_processing/
 ├── knowledge_base/
+├── notebooks/
+│   ├── phone_detection_data_preparation.ipynb
+│   ├── phone_detection_training.ipynb
+│   └── phone_detection_training_kaggle.ipynb
+├── artifacts/
+│   └── phone_detection/
 ├── models/
 ├── src/
 │   └── drivesense/
@@ -69,6 +75,32 @@ Module-specific design and test details are documented in:
 - [Visual distraction](src/drivesense/visual_distraction/README.md)
 - [Configuration](configs/README.md)
 - [Tests](tests/README.md)
+- [Notebooks](notebooks/README.md)
+- [Final artifacts](artifacts/phone_detection/README.md)
+
+## Phone detection
+
+The prepared phone-only dataset is under `data/processed/phone_detection/`.
+Raw data remains unchanged.
+
+The project includes:
+
+- Data preparation: [phone_detection_data_preparation.ipynb](notebooks/phone_detection_data_preparation.ipynb)
+- YOLO11n training: [phone_detection_training.ipynb](notebooks/phone_detection_training.ipynb)
+- Kaggle-run notebook export:
+  [phone_detection_training_kaggle.ipynb](notebooks/phone_detection_training_kaggle.ipynb)
+- Final model and evaluation bundle:
+  [artifacts/phone_detection/](artifacts/phone_detection/)
+
+The completed YOLO11n run used a 640-pixel image size and achieved:
+
+| Split | Precision | Recall | mAP@50 | mAP@50-95 |
+|---|---:|---:|---:|---:|
+| Validation | 0.8809 | 0.8649 | 0.9168 | 0.6804 |
+| Test | 0.8835 | 0.8202 | 0.8805 | 0.6481 |
+
+These are measured training-run results. The test split is used only for final
+evaluation and was not used to tune the model.
 
 ## Configuration
 

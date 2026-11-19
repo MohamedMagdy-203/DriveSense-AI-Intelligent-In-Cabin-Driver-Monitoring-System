@@ -2,10 +2,13 @@
 
 ## Current status
 
-Phone-usage detection is intentionally **not implemented** in the current
-prototype. This knowledge-base entry records the scope boundary so that
-future work does not get confused with the implemented gaze, head-pose, or
-drowsiness components.
+Phone **object detection** is implemented as a prepared dataset and a trained
+YOLO11n prototype.
+
+Phone **usage behavior classification** is not implemented. The current model
+detects a phone object in an image; it does not decide that a driver is using
+it, holding it, or operating it. It must not be confused with gaze, head-pose,
+or drowsiness behavior analysis.
 
 ## Planned responsibility
 

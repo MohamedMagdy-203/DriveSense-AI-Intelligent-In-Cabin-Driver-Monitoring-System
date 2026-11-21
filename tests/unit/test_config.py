@@ -13,6 +13,10 @@ def test_default_config_preserves_runtime_defaults() -> None:
     assert config.mediapipe.delegate == "CPU"
     assert config.temporal.head_pose_window_seconds == 2.0
     assert config.temporal.long_glance_seconds == 3.0
+    assert config.temporal.cumulative_glance_seconds == 10.0
+    assert config.temporal.glance_window_seconds == 30.0
+    assert config.drowsiness.perclos_window_seconds == 60.0
+    assert config.drowsiness.prolonged_closure_test_seconds == 4.0
 
 
 def test_config_rejects_non_cpu_delegate(tmp_path: Path) -> None:
@@ -36,6 +40,13 @@ temporal:
   glance_window_seconds: 30
   reengagement_seconds: 2
   cumulative_glance_seconds: 10
+drowsiness:
+  perclos_window_seconds: 60
+  closure_score_threshold: 0.8
+  blink_exclusion_seconds: 0.2
+  prolonged_closure_test_seconds: 4
+  open_openness_baseline: 0.3298
+  closed_openness_baseline: 0.0736
 """,
         encoding="utf-8",
     )

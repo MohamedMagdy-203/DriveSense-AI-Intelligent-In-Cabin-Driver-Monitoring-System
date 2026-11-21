@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass
+from collections.abc import Callable
 
 from drivesense.visual_distraction.assessment import GazeAssessmentStatus
 
@@ -20,8 +21,9 @@ class GlanceEvent:
 class GlanceTracker:
     """Track one active off-reference glance at a time."""
 
-    def __init__(self) -> None:
+    def __init__(self, clock: Callable[[], float] | None = None) -> None:
         self._start_time: float | None = None
+        self._clock = clock or time.monotonic
 
     @property
     def active_start_time(self) -> float | None:
@@ -30,7 +32,7 @@ class GlanceTracker:
 
     def update(self, status: GazeAssessmentStatus) -> GlanceEvent | None:
         """Update the tracker and return a glance when it is closed."""
-        timestamp = time.monotonic()
+        timestamp = self._clock()
 
         if status is GazeAssessmentStatus.OFF_REFERENCE:
             if self._start_time is None:

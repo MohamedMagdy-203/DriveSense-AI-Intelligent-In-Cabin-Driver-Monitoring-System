@@ -40,10 +40,21 @@ class TemporalConfig:
 
 
 @dataclass(frozen=True)
+class DrowsinessConfig:
+    perclos_window_seconds: float
+    closure_score_threshold: float
+    blink_exclusion_seconds: float
+    prolonged_closure_test_seconds: float
+    open_openness_baseline: float
+    closed_openness_baseline: float
+
+
+@dataclass(frozen=True)
 class AppConfig:
     camera: CameraConfig
     mediapipe: MediaPipeConfig
     temporal: TemporalConfig
+    drowsiness: DrowsinessConfig
 
 
 def _section(data: dict[str, Any], name: str) -> dict[str, Any]:
@@ -68,6 +79,19 @@ def _confidence(value: Any, name: str) -> float:
     return result
 
 
+def _number(value: Any, name: str) -> float:
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
+        raise ValueError(f"{name} must be a number.")
+    return float(value)
+
+
+def _nonnegative_number(value: Any, name: str) -> float:
+    result = _number(value, name)
+    if result < 0:
+        raise ValueError(f"{name} must be non-negative.")
+    return result
+
+
 def load_config(path: Path | None = None) -> AppConfig:
     """Load and validate application settings from YAML."""
     config_path = path or DEFAULT_CONFIG_PATH
@@ -79,6 +103,7 @@ def load_config(path: Path | None = None) -> AppConfig:
     camera = _section(raw, "camera")
     mediapipe = _section(raw, "mediapipe")
     temporal = _section(raw, "temporal")
+    drowsiness = _section(raw, "drowsiness")
     width = camera.get("width")
     height = camera.get("height")
     if not isinstance(width, int) or isinstance(width, bool) or width <= 0:
@@ -98,6 +123,20 @@ def load_config(path: Path | None = None) -> AppConfig:
     delegate = mediapipe.get("delegate")
     if delegate != "CPU":
         raise ValueError("mediapipe.delegate must be 'CPU'.")
+
+    open_openness_baseline = _number(
+        drowsiness.get("open_openness_baseline"),
+        "drowsiness.open_openness_baseline",
+    )
+    closed_openness_baseline = _number(
+        drowsiness.get("closed_openness_baseline"),
+        "drowsiness.closed_openness_baseline",
+    )
+    if open_openness_baseline <= closed_openness_baseline:
+        raise ValueError(
+            "drowsiness.open_openness_baseline must be greater than "
+            "drowsiness.closed_openness_baseline"
+        )
 
     return AppConfig(
         camera=CameraConfig(index, width, height, window_name),
@@ -138,5 +177,25 @@ def load_config(path: Path | None = None) -> AppConfig:
                 temporal.get("cumulative_glance_seconds"),
                 "temporal.cumulative_glance_seconds",
             ),
+        ),
+        drowsiness=DrowsinessConfig(
+            perclos_window_seconds=_positive_number(
+                drowsiness.get("perclos_window_seconds"),
+                "drowsiness.perclos_window_seconds",
+            ),
+            closure_score_threshold=_confidence(
+                drowsiness.get("closure_score_threshold"),
+                "drowsiness.closure_score_threshold",
+            ),
+            blink_exclusion_seconds=_nonnegative_number(
+                drowsiness.get("blink_exclusion_seconds"),
+                "drowsiness.blink_exclusion_seconds",
+            ),
+            prolonged_closure_test_seconds=_positive_number(
+                drowsiness.get("prolonged_closure_test_seconds"),
+                "drowsiness.prolonged_closure_test_seconds",
+            ),
+            open_openness_baseline=open_openness_baseline,
+            closed_openness_baseline=closed_openness_baseline,
         ),
     )

@@ -5,6 +5,7 @@ from __future__ import annotations
 import time
 from collections import deque
 from dataclasses import dataclass
+from collections.abc import Callable
 
 from drivesense.config import load_config
 from drivesense.head_pose.pose import (
@@ -36,7 +37,11 @@ class TemporalState:
 class HeadPoseTemporalAnalyzer:
     """Track valid head pose estimates over a short rolling time window."""
 
-    def __init__(self, window_seconds: float | None = None) -> None:
+    def __init__(
+        self,
+        window_seconds: float | None = None,
+        clock: Callable[[], float] | None = None,
+    ) -> None:
         if window_seconds is None:
             window_seconds = load_config().temporal.head_pose_window_seconds
         if window_seconds <= 0:
@@ -44,7 +49,8 @@ class HeadPoseTemporalAnalyzer:
         self.window_seconds = window_seconds
         self._history: deque[HeadPoseSample] = deque()
         self._current_estimate = HeadPoseEstimate(HeadPoseStatus.NO_FACE)
-        self._current_timestamp_monotonic = time.monotonic()
+        self._clock = clock or time.monotonic
+        self._current_timestamp_monotonic = self._clock()
 
     @property
     def current_estimate(self) -> HeadPoseEstimate:
@@ -60,7 +66,7 @@ class HeadPoseTemporalAnalyzer:
 
     def update(self, estimate: HeadPoseEstimate) -> TemporalState:
         """Store a valid estimate and update the current measurement state."""
-        timestamp = time.monotonic()
+        timestamp = self._clock()
         self._current_timestamp_monotonic = timestamp
         self._current_estimate = estimate
 

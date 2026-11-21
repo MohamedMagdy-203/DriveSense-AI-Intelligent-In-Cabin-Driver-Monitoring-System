@@ -5,8 +5,9 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass
 from enum import Enum
+from collections.abc import Callable
 
-from drivesense.config import load_config
+from drivesense.config import TemporalConfig
 from drivesense.visual_distraction.assessment import GazeAssessmentStatus
 from drivesense.visual_distraction.glance_history import GlanceHistory
 
@@ -30,16 +31,27 @@ class DistractionAssessment:
 class TemporalDistractionAnalyzer:
     """Evaluate glance duration and repetition over time."""
 
-    _CONFIG = load_config().temporal
-    LONG_GLANCE_SECONDS = _CONFIG.long_glance_seconds
-    WINDOW_SECONDS = _CONFIG.glance_window_seconds
-    REENGAGEMENT_SECONDS = _CONFIG.reengagement_seconds
-    CUMULATIVE_GLANCE_SECONDS = _CONFIG.cumulative_glance_seconds
-
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        config: TemporalConfig | None = None,
+        clock: Callable[[], float] | None = None,
+    ) -> None:
+        if config is None:
+            config = TemporalConfig(
+                head_pose_window_seconds=2.0,
+                long_glance_seconds=3.0,
+                glance_window_seconds=30.0,
+                reengagement_seconds=2.0,
+                cumulative_glance_seconds=10.0,
+            )
+        self.long_glance_seconds = config.long_glance_seconds
+        self.window_seconds = config.glance_window_seconds
+        self.reengagement_seconds = config.reengagement_seconds
+        self.cumulative_glance_seconds = config.cumulative_glance_seconds
         self._reference_start_time: float | None = None
         self._reengagement_applied = False
         self._last_reengagement_time: float | None = None
+        self._clock = clock or time.monotonic
 
     def update(
         self,
@@ -48,7 +60,7 @@ class TemporalDistractionAnalyzer:
         current_status: GazeAssessmentStatus,
     ) -> DistractionAssessment:
         """Analyze the current glance state and recent completed events."""
-        now = time.monotonic()
+        now = self._clock()
 
         if current_status is GazeAssessmentStatus.UNAVAILABLE:
             self._reset_reference_tracking()
@@ -64,7 +76,7 @@ class TemporalDistractionAnalyzer:
             if active_start_time is None:
                 return DistractionAssessment(DistractionStatus.UNDETERMINED)
 
-        window_start = now - self.WINDOW_SECONDS
+        window_start = now - self.window_seconds
         if self._last_reengagement_time is not None:
             window_start = max(window_start, self._last_reengagement_time)
 
@@ -74,10 +86,10 @@ class TemporalDistractionAnalyzer:
             if active_start_time is None
             else max(0.0, now - active_start_time)
         )
-        if active_duration >= self.LONG_GLANCE_SECONDS:
+        if active_duration >= self.long_glance_seconds:
             return DistractionAssessment(DistractionStatus.POTENTIAL_DISTRACTION)
         if any(
-            event.duration_seconds >= self.LONG_GLANCE_SECONDS
+            event.duration_seconds >= self.long_glance_seconds
             for event in recent_events
         ):
             return DistractionAssessment(DistractionStatus.POTENTIAL_DISTRACTION)
@@ -95,7 +107,10 @@ class TemporalDistractionAnalyzer:
             if active_start_time is None
             else max(0.0, now - max(active_start_time, window_start))
         )
-        if closed_duration + active_window_duration >= self.CUMULATIVE_GLANCE_SECONDS:
+        if (
+            closed_duration + active_window_duration
+            >= self.cumulative_glance_seconds
+        ):
             return DistractionAssessment(DistractionStatus.POTENTIAL_DISTRACTION)
 
         if current_status is GazeAssessmentStatus.ON_REFERENCE:
@@ -108,7 +123,8 @@ class TemporalDistractionAnalyzer:
             self._reengagement_applied = False
         if (
             not self._reengagement_applied
-            and now - self._reference_start_time >= self.REENGAGEMENT_SECONDS
+            and now - self._reference_start_time
+            >= self.reengagement_seconds
         ):
             self._last_reengagement_time = now
             self._reengagement_applied = True

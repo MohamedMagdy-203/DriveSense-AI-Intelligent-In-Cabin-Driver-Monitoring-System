@@ -17,3 +17,11 @@ temporal:
   glance_window_seconds: 30.0
   reengagement_seconds: 2.0
   cumulative_glance_seconds: 10.0
+
+drowsiness:
+  perclos_window_seconds: 60.0
+  closure_score_threshold: 0.8
+  blink_exclusion_seconds: 0.2
+  prolonged_closure_test_seconds: 4.0
+  open_openness_baseline: 0.3298
+  closed_openness_baseline: 0.0736

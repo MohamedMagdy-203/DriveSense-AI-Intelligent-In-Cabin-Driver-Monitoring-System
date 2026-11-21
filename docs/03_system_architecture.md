@@ -9,15 +9,22 @@ calibration, benchmark, and live-demo scripts:
 ```mermaid
 flowchart TD
     A[Camera / GStreamer] --> B[Face Runtime]
-    B --> C[Face Landmarks and Matrices]
-    C --> D[Drowsiness Experiments]
-    C --> E[Gaze Geometry and Classification]
-    C --> F[Head Pose Estimation]
+    A --> P[Phone Frame Input]
+    B --> C[FaceObservation]
+    C --> D[DrowsinessAnalyzer]
+    C --> E[GazeProcessor]
+    C --> F[HeadPoseEstimator]
     E --> G[Driving Gaze Assessment]
     F --> G
     G --> H[Glance Tracker]
     H --> I[Glance History]
     I --> J[Temporal Distraction Analyzer]
+    P --> K[Async YOLO Provider]
+    K --> L[PhoneObservation]
+    C --> M[EngineFrameOutput]
+    D --> M
+    J --> M
+    L --> M
 ```
 
 `src/drivesense/` contains reusable implementation code. `experiments/`
@@ -93,6 +100,8 @@ The MediaPipe pipeline comparison is documented in
 |---|---|
 | `drivesense.config` | Load and validate YAML runtime configuration. |
 | `drivesense.face.runtime` | CPU MediaPipe Face Landmarker and GStreamer helpers. |
+| `drivesense.engine` | Orchestrate frame processing into one `EngineFrameOutput`. |
+| `drivesense.phone.runtime` | Synchronous/asynchronous YOLO adapter for phone observations. |
 | `drivesense.visual_distraction.gaze` | Iris geometry, calibration, and gaze classification. |
 | `drivesense.head_pose` | Relative rotation-vector estimation and valid-sample history. |
 | `drivesense.visual_distraction` | Gaze assessment, glance tracking, history, and temporal analysis. |

@@ -135,3 +135,71 @@ evaluate changes in:
 - Different users and eye geometries.
 - Temporary face or iris tracking loss.
 - Eye-gaze and Head-Pose disagreement.
+
+## Drowsiness and phone reference criteria
+
+The visual-distraction criteria above are prototype references:
+
+- Long glance: `3 seconds`.
+- Cumulative glance time: `10 seconds in 30 seconds`.
+- Microsleep/prolonged-closure test scenario: continuous eye closure for up to
+  `4 seconds`.
+
+PERCLOS remains a separate temporal metric. Its window, closure score, and
+blink-exclusion rule are configurable prototype inputs and are not a universal
+drowsiness threshold. KSS 7 or 8 is retained as a human sleepiness reference
+only; it is not directly converted to EAR or PERCLOS in this implementation.
+
+The phone module reports detection only. A phone box is not converted into
+phone use, distraction, or an alert because no universal time threshold is
+defined for that behavior.
+
+## Live webcam verification
+
+Live webcam testing was performed with the integrated
+`DriverMonitoringEngine` using `640x480` frames and the existing natural-gaze
+calibration containing 299 valid gaze samples. A short probe processed 139
+frames over approximately 5 seconds and returned `AVAILABLE` Face,
+`ON_REFERENCE` Gaze, `ATTENTIVE` gaze assessment, `OPEN` Drowsiness, `0%`
+PERCLOS, and `ATTENTIVE` Distraction.
+
+This is one stationary live test result, not a general performance or
+accuracy evaluation. It does not establish universal thresholds, clinical
+drowsiness conclusions, or Euro NCAP/compliance behavior.
+
+## References and evidence traceability
+
+The following sources support the scientific concepts used in this prototype.
+They do not establish that the implemented thresholds have been validated for
+every driver, vehicle, lighting condition, or camera position.
+
+1. Åkerstedt, T. and Gillberg, M. (1990), *Subjective and Objective Sleepiness
+   in the Active Individual*. International Journal of Neuroscience, 52,
+   29-37. DOI:
+   [10.3109/00207459008994241](https://doi.org/10.3109/00207459008994241).
+   Supports the subjective/objective sleepiness research context and KSS
+   development; it does not define an EAR or PERCLOS threshold.
+2. Kaida, K. et al. (2006), *Validation of the Karolinska sleepiness scale
+   against performance and EEG variables*. Clinical Neurophysiology, 117,
+   1574-1581. DOI:
+   [10.1016/j.clinph.2006.03.011](https://doi.org/10.1016/j.clinph.2006.03.011).
+   Supports KSS validation; it is not converted into webcam-derived thresholds
+   by DriveSense.
+3. Dinges, D.F. and Grace, R. (1998), *PERCLOS: A Valid Psychophysiological
+   Measure of Alertness as Assessed by Psychomotor Vigilance Tasks*, Federal
+   Highway Administration, FHWA-MCRT-98-006. Supports PERCLOS as a temporal
+   eye-closure measure and shows that implementation definitions can vary.
+4. European Parliament and Council (2019),
+   [Regulation (EU) 2019/2144](https://eur-lex.europa.eu/eli/reg/2019/2144/oj),
+   general safety and type-approval requirements. This is policy context for
+   driver-monitoring research, not evidence that this prototype is compliant.
+5. Euro NCAP,
+   [Engineer Protocols](https://www.euroncap.com/en/for-engineers/protocols/).
+   The 3-second and 4-second scenarios and phone-use scenarios are used only as
+   engineering/test references. Exact protocol versions and their current
+   definitions must be verified before making a compliance claim.
+
+The 3-second long-glance, 10/30-second cumulative-glance, and 4-second
+prolonged-closure values are project-specific prototype criteria. They are
+configuration values informed by relevant practices, not universal thresholds
+or scientifically proven danger limits.

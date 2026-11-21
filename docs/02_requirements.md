@@ -33,6 +33,13 @@ The system aims to identify potential signs of:
 | FR-010 | The system shall record relevant detection events and timestamps. |
 | FR-011 | The system shall handle unreliable or unavailable visual input appropriately. |
 
+Implementation status:
+
+- FR-003 and FR-004 are implemented at prototype level.
+- FR-005 is implemented as YOLO phone-object detection.
+- FR-006 is not implemented: interaction with a detected phone is not inferred.
+- FR-009 alert generation is not implemented.
+
 ## 3. Non-Functional Requirements
 
 | ID | Category | Requirement |

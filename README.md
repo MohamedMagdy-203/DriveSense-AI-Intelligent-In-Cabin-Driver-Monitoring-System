@@ -12,12 +12,35 @@ not claim regulatory compliance or production distraction classification.
 
 ```text
 Camera / GStreamer
-    -> Face Runtime
-    -> Gaze + Head Pose
-    -> Driving Gaze Assessment
-    -> Glance Tracker
-    -> Glance History
-    -> Temporal Distraction Analyzer
+    -> MediaPipe Face Runtime
+         -> Gaze Processor
+         -> Head Pose
+         -> Drowsiness Analyzer
+         -> FaceObservation
+    -> Async YOLO Phone Provider
+         -> PhoneObservation
+    -> DriverMonitoringEngine
+         -> EngineFrameOutput
+         -> Runtime Visualization
+```
+
+```mermaid
+flowchart TD
+    Camera[Webcam / GStreamer] --> Engine[DriverMonitoringEngine]
+    Camera --> Phone[Async YOLO Phone Provider]
+    Engine --> Face[MediaPipe FaceProvider]
+    Face --> Drowsy[DrowsinessAnalyzer]
+    Face --> Gaze[GazeProcessor]
+    Face --> Pose[HeadPoseEstimator]
+    Gaze --> Assess[DrivingGazeAssessment]
+    Pose --> Assess
+    Assess --> Glances[Glance Tracker / History]
+    Glances --> Temporal[TemporalDistractionAnalyzer]
+    Phone --> Output[PhoneObservation]
+    Drowsy --> Frame[EngineFrameOutput]
+    Temporal --> Frame
+    Output --> Frame
+    Frame --> Runtime[OpenCV Runtime Visualization]
 ```
 
 Reusable code is under `src/drivesense/`. Experiment scripts under
@@ -35,6 +58,7 @@ calibration history.
 ├── experiments/
 │   ├── face_landmarker/
 │   ├── head_pose/
+│   ├── integration/
 │   └── video_processing/
 ├── knowledge_base/
 ├── notebooks/
@@ -49,6 +73,7 @@ calibration history.
 │       ├── config.py
 │       ├── face/
 │       ├── head_pose/
+│       ├── phone/
 │       └── visual_distraction/
 ├── tests/
 │   ├── unit/
@@ -63,6 +88,8 @@ calibration history.
 | Module | Responsibility |
 |---|---|
 | `drivesense.config` | Load and validate YAML settings. |
+| `drivesense.engine` | Run one independent DMS frame-processing cycle. |
+| `drivesense.phone.runtime` | Adapt YOLO phone detections to `PhoneObservation`. |
 | `drivesense.face.runtime` | CPU MediaPipe Face Landmarker and GStreamer helpers. |
 | `drivesense.head_pose` | Relative rotation-vector estimation and valid history. |
 | `drivesense.visual_distraction.gaze` | Iris geometry, calibration, and classification. |
@@ -124,8 +151,61 @@ not universal thresholds and not proof of driver distraction.
 ./.venv/Scripts/python.exe -m pytest
 ```
 
+For CPU-only MediaPipe and project modules, install the repository
+dependencies normally. Phone detection CUDA support is optional and requires a
+CUDA-enabled PyTorch build matching the installed NVIDIA driver and toolkit:
+
+```powershell
+python -m pip install torch==2.5.1+cu121 torchvision==0.20.1+cu121 --index-url https://download.pytorch.org/whl/cu121
+python -m pip install ultralytics
+```
+
+Do not assume every CUDA build is compatible with every NVIDIA GPU or driver.
+
 The ordinary test suite uses synthetic inputs and deterministic clocks; it
 does not require a physical camera.
+
+## Live Webcam Testing
+
+A live webcam integration probe was performed with `640x480` frames and the
+Windows camera. The natural-gaze calibration file used by the runtime contains
+299 valid gaze samples. The probe processed 139 frames over approximately 5
+seconds and observed the following repeatable Face/Gaze/Drowsiness outputs:
+
+- Face: `AVAILABLE`
+- Gaze: `ON_REFERENCE`
+- Overall gaze result: `ATTENTIVE`
+- Drowsiness: `OPEN`
+- PERCLOS: `0%`
+- Distraction: `ATTENTIVE`
+
+This result documents live webcam behavior under one stationary test
+condition only. It is not a validation of gaze accuracy, drowsiness detection,
+distraction thresholds, or end-to-end phone behavior. It should not be
+interpreted as Euro NCAP, regulatory, or clinical compliance evidence.
+
+An additional timed end-to-end smoke run completed 201 processed frames in
+8.67 seconds, with 32.43 average FPS and zero camera read failures. This is
+an integration/stability observation, not an accuracy or hardware benchmark.
+
+## Live Stability Measurement
+
+A 120-second timed webcam run completed `3561` frames with `0` camera read
+failures. The measured averages were:
+
+| Metric | Result |
+|---|---:|
+| Duration | 120.38 s |
+| Processed frames | 3561 |
+| Average FPS | 32.27 |
+| Average frame loop | 30.99 ms |
+| Initial RSS | 847.84 MB |
+| Final RSS | 482.36 MB |
+| Peak RSS | 1563.19 MB |
+| Average process CPU | 48.51% |
+
+This was one local Windows webcam run. It is not a multi-hour endurance test,
+multi-user evaluation, or sustained-memory-leak proof.
 
 ## Running experiments
 
@@ -139,6 +219,8 @@ From the repository root:
 ./.venv/Scripts/python.exe experiments/face_landmarker/gaze/calibrate.py
 ./.venv/Scripts/python.exe experiments/face_landmarker/gaze/monitor.py
 ./.venv/Scripts/python.exe experiments/head_pose/monitor.py
+./.venv/Scripts/python.exe experiments/integration/live.py
+./.venv/Scripts/python.exe experiments/integration/live.py --duration 10
 ```
 
 Live scripts require a compatible webcam and GStreamer installation. Press
@@ -151,6 +233,9 @@ Live scripts require a compatible webcam and GStreamer installation. Press
 - [System architecture](docs/03_system_architecture.md)
 - [Model selection](docs/04_model_selection.md)
 - [Driving gaze and distraction](docs/05_driving_gaze_and_distraction.md)
+- [Integration contract](docs/06_integration_contract.md)
+- [Final release record](docs/07_final_release.md)
+- [Demo recording guide](demo/README.md)
 - [Experiments](experiments/README.md)
 
 ## Current limitations

@@ -62,3 +62,19 @@ These are results from one local run, not population-level validation.
   lighting conditions, camera positions, and frame-loss scenarios.
 - A missing face or missing landmark observation must not be interpreted as
   evidence of drowsiness.
+
+## References
+
+- Åkerstedt T, Gillberg M. Subjective and Objective Sleepiness in the Active
+  Individual. International Journal of Neuroscience. 1990;52:29-37.
+  DOI: https://doi.org/10.3109/00207459008994241
+- Kaida K et al. Validation of the Karolinska sleepiness scale against
+  performance and EEG variables. Clinical Neurophysiology. 2006;117:1574-1581.
+  DOI: https://doi.org/10.1016/j.clinph.2006.03.011
+- Dinges DF, Grace R. PERCLOS: A Valid Psychophysiological Measure of
+  Alertness as Assessed by Psychomotor Vigilance Tasks. Federal Highway
+  Administration report FHWA-MCRT-98-006, 1998.
+
+These sources support sleepiness/PERCLOS concepts. They do not validate the
+project's 60-second PERCLOS window, 0.8 closure score, or 4-second test
+scenario across real drivers.

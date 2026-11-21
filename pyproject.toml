@@ -13,6 +13,7 @@ dependencies = [
     "opencv-python",
     "psutil",
     "PyYAML",
+    "ultralytics",
 ]
 
 [project.optional-dependencies]

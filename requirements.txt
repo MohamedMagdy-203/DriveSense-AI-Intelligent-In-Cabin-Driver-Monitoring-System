@@ -3,3 +3,4 @@ psutil
 mediapipe
 PyYAML
 pytest
+ultralytics

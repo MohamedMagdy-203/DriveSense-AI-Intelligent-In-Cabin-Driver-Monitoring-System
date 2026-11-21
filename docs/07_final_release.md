@@ -29,7 +29,6 @@ DriveSense integrates:
 | Stability peak RSS | 1563.19 MB |
 | Stability final RSS | 482.36 MB |
 | Stability average process CPU | 48.51% |
-| Demo recording | 270 frames, 30 FPS container, 9 seconds |
 
 Runtime measurements are from one Windows laptop webcam run and may vary
 between machines and environments.

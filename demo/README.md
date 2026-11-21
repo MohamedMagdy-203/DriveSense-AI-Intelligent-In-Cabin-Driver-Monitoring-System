@@ -43,15 +43,8 @@ This demo demonstrates software behavior under a single local webcam session.
 It is not a multi-driver evaluation, clinical drowsiness test, or Euro NCAP
 validation.
 
-## Recorded evidence currently available
+## Recorded evidence placeholder
 
-The repository contains an actual webcam recording at
-[`drivesense_demo.mp4`](drivesense_demo.mp4).
-The recording was verified as:
-
-- 270 frames
-- 30 FPS container frame rate
-- 9 seconds of recorded video
-
-The accompanying runtime smoke summary was 11.13 seconds wall duration,
-270 processed frames, 35.06 average FPS, and zero camera read failures.
+No demonstration video is currently committed to this repository.
+After recording a suitable consented demo, place or link the final video here
+and update the main README Demo section.

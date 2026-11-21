@@ -8,6 +8,14 @@ The repository separates reusable production modules from calibration,
 benchmark, data-collection, and live-demo experiments. The current work does
 not claim regulatory compliance or production distraction classification.
 
+## Demo
+
+> **Demo video coming soon:** A full DriveSense end-to-end webcam demonstration
+> will be recorded and linked here before the public repository release.
+
+The demo will show face availability, gaze and head pose, drowsiness/PERCLOS,
+visual distraction, phone detection, and the monitoring window.
+
 ## Architecture
 
 ```text

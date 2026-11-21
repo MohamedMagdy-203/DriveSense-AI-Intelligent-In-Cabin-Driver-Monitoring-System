@@ -5,7 +5,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 from drivesense.visual_distraction.gaze.calibration import EyeCalibration
-from drivesense.visual_distraction.gaze.geometry import NormalizedIrisPosition
+from drivesense.visual_distraction.gaze.geometry import (
+    NormalizedIrisPosition,
+    normalized_iris_positions,
+)
+from typing import Mapping
 
 
 class GazeDirection(str, Enum):
@@ -138,3 +142,35 @@ def classify_gaze(
     else:
         direction = _vertical_direction(vertical_score)
     return GazeClassification(direction=direction, eyes=eye_results)
+
+
+class GazeProcessor:
+    """Turn first-face landmarks into one calibrated gaze classification."""
+
+    def __init__(
+        self,
+        calibrations: Mapping[str, EyeCalibration] | None = None,
+        horizontal_signs: Mapping[str, int] | None = None,
+    ) -> None:
+        self._calibrations = dict(calibrations or {})
+        self._horizontal_signs = dict(horizontal_signs or {})
+        self.last_error: Exception | None = None
+
+    def update(
+        self,
+        face_landmarks: tuple[object, ...] | list[object],
+    ) -> GazeClassification | None:
+        if set(self._calibrations) != {"right_eye", "left_eye"}:
+            return None
+        try:
+            positions = normalized_iris_positions(list(face_landmarks))
+            result = classify_gaze(
+                positions,
+                self._calibrations,
+                self._horizontal_signs,
+            )
+            self.last_error = None
+            return result
+        except (IndexError, KeyError, ValueError) as exc:
+            self.last_error = exc
+            return None

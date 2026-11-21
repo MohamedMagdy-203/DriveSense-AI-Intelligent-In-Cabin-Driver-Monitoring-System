@@ -11,6 +11,10 @@ import mediapipe as mp
 import numpy as np
 
 from drivesense.config import load_config
+from drivesense.integration_contract import (
+    FaceFrameStatus,
+    FaceObservation,
+)
 
 
 CONFIG = load_config()
@@ -150,3 +154,60 @@ def print_landmark_output(face_landmarks: list[object]) -> None:
     print("\nEye landmark indices:")
     for name, indices in EYE_GROUPS.items():
         print(f"  {name}: {list(indices)}")
+
+
+class MediaPipeFaceProvider:
+    """Synchronous Face Landmarker provider for the integration engine."""
+
+    def __init__(self) -> None:
+        self._landmarker = None
+
+    def __enter__(self) -> "MediaPipeFaceProvider":
+        self._landmarker = create_landmarker()
+        self._landmarker.__enter__()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        if self._landmarker is not None:
+            self._landmarker.__exit__(exc_type, exc_value, traceback)
+            self._landmarker = None
+
+    def process_frame(self, frame: object, timestamp_ms: int) -> object:
+        if self._landmarker is None:
+            raise RuntimeError("MediaPipeFaceProvider is not initialized.")
+        result = self._landmarker.detect_for_video(
+            face_image(frame),
+            timestamp_ms,
+        )
+        return face_observation_from_result(result, timestamp_ms)
+
+
+def face_observation_from_result(
+    result: object,
+    timestamp_ms: int,
+) -> FaceObservation:
+    """Convert a MediaPipe result into the engine-facing face contract."""
+    face_sets = getattr(result, "face_landmarks", None)
+    if not face_sets:
+        return FaceObservation(
+            FaceFrameStatus.NO_FACE,
+            timestamp_ms=timestamp_ms,
+        )
+    landmarks = tuple(face_sets[0])
+    if len(landmarks) < 478:
+        raise ValueError(
+            "The first face has fewer than 478 MediaPipe landmarks."
+        )
+    matrices = getattr(result, "facial_transformation_matrixes", None)
+    facial_matrix = None
+    if matrices:
+        try:
+            facial_matrix = matrices[0]
+        except (IndexError, TypeError):
+            facial_matrix = None
+    return FaceObservation(
+        FaceFrameStatus.AVAILABLE,
+        landmarks=landmarks,
+        facial_matrix=facial_matrix,
+        timestamp_ms=timestamp_ms,
+    )

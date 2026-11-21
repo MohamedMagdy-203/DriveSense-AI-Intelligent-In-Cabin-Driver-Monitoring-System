@@ -41,6 +41,25 @@ The test split was not used for tuning.
 The `.pt` weights are ignored by Git. Keep the files in the local artifact
 bundle or download them separately for release distribution.
 
+Fresh clones do not contain the ignored `.pt` weights. The local runtime
+requires `weights/best.pt` at the path above. Reproduce the artifact by running
+the training notebook or copy the verified local checkpoint bundle into the
+same directory. This repository does not provide an unverified external weight
+download link.
+
+After copying a verified checkpoint bundle, prepare and verify it with:
+
+```powershell
+python scripts/prepare_phone_artifacts.py C:\path\to\phone_detection_bundle
+python scripts/prepare_phone_artifacts.py --verify-only
+```
+
+The tracked
+[`model_manifest.json`](model_manifest.json)
+records the verified SHA-256 values for this project's local artifact bundle.
+The manifest is integrity metadata, not a proof of dataset or runtime
+generalization.
+
 ## Reload
 
 ```python

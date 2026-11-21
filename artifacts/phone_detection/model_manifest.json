@@ -1,0 +1,19 @@
+{
+  "model": "YOLO11n",
+  "task": "phone object detection",
+  "class_id": 0,
+  "class_name": "phone",
+  "weights": {
+    "best": {
+      "relative_path": "artifacts/phone_detection/weights/best.pt",
+      "sha256": "30488B7FCA85FFFE728C24A215456B981A0C442C928711646881A37D31737D2A"
+    },
+    "last": {
+      "relative_path": "artifacts/phone_detection/weights/last.pt",
+      "sha256": "763F038AD1AEC7FF26CC1715673E9A90220C12EBFEFCF0B1717A3A3A18D1843A"
+    }
+  },
+  "image_size": 640,
+  "confidence_threshold": 0.25,
+  "artifact_status": "local trained bundle; weights are ignored by Git"
+}

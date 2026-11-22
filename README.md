@@ -243,6 +243,7 @@ Live scripts require a compatible webcam and GStreamer installation. Press
 - [Driving gaze and distraction](docs/05_driving_gaze_and_distraction.md)
 - [Integration contract](docs/06_integration_contract.md)
 - [Final release record](docs/07_final_release.md)
+- [Repository dependency map](docs/08_repository_dependency_map.md)
 - [Demo recording guide](demo/README.md)
 - [Experiments](experiments/README.md)
 
